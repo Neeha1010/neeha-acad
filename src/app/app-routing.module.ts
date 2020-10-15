@@ -5,7 +5,7 @@ const routes: Routes = [
   
   {
     path: '',
-    redirectTo: 'holiday',
+    redirectTo: 'home',
     pathMatch: 'full'
   },
   {

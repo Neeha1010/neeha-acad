@@ -50,11 +50,11 @@ export class HolidayPage implements OnInit {
           text: 'Ok',
           handler: (data) => {
             if (data===0 ){
-              this.presentAlertPrompt("holiday")
+              this.presentAlertPrompt("Holidays")
             }
             if (data===1 ){
 
-              this.presentAlertPrompt("exams")
+              this.presentAlertPrompt("Exams")
             }
             
                
@@ -67,6 +67,7 @@ export class HolidayPage implements OnInit {
   }
 
   async presentAlertPrompt(reason:string) {
+   let min= new Date().getFullYear().toString()+'-'+new Date().getMonth().toString()+'-'+new Date().getDate().toString()
     const alert = await this.alertController.create({
     
       header: 'Add Event',
@@ -84,7 +85,8 @@ export class HolidayPage implements OnInit {
         {
           name: 'name2',
           type: 'date',
-          placeholder: 'start date',
+          
+          //
           
         },
         // input date without min nor max
@@ -109,7 +111,7 @@ export class HolidayPage implements OnInit {
         }, {
           text: 'Ok',
           handler: (data) => {
-            this.HolidayService.addEventHoliday(data.name1,data.name2,data.name3)
+            this.HolidayService.addEventHoliday(data.name1,data.name2,data.name3,reason)
             console.log(data);
           }
         }

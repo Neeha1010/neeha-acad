@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { every, map, take } from 'rxjs/operators'
+import { BehaviorSubject, interval } from 'rxjs';
+import {  map, take } from 'rxjs/operators'
 import { homeModel } from './homemodel';
 import { LocalNotificationSchedule, Plugins } from '@capacitor/core';
-import { on } from 'process';
+
 // import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 const { LocalNotifications } = Plugins
@@ -16,56 +16,72 @@ export class HomeService {
   constructor() { }
   private events=new BehaviorSubject<homeModel[]>([])
   addEvent( eventName:string, starttime:string, endtime:string, day:number){
-    let year = new Date().getFullYear();
-let month = new Date().getMonth();
-let Day = new Date().getDate();
+    let present = new Date();
+    let year = present.getFullYear();
+    let hour = parseInt(starttime.slice(0,2));
+    let min= parseInt(starttime.slice(3,5));
+let Day = present.getDate();
+let d1 = present.getDay();
 
-let time1 = new Date(year, month, Day, parseInt(starttime.slice(0,2)), parseInt(starttime.slice(3,5)), 0, 0);
+if (! (day === d1)){
+var dif = day-d1;
+if (dif<0){
+  present.setDate(Day+7+dif);
+
+}else{
+  present.setDate(Day+dif);
+}
+}
+if(day==d1){
+  if (hour<present.getHours()){
+    present.setDate(Day+7);
+    console.log('set hour')
+  }else{
+    console.log('set hourdd')
+
+    if (hour==present.getHours()){
+      // console.log('hours equal')
+      // console.log('hours equal'+min)
+      // console.log('it is '+ present.getMinutes()) 
+      if (min<present.getMinutes()){
+        present.setDate(Day+7);
+        console.log('set minute')
+      }
+    }
+
+  }
+}
+present.setHours(hour,min,0);
+console.log(present)
+// let time1 = new Date(year, month, setDate, parseInt(starttime.slice(0,2)), parseInt(starttime.slice(3,5)), 0, 0);
 
     this.events.asObservable().pipe(take(1)).subscribe(events => this.events.next(events.concat(new homeModel(eventName,starttime,endtime,day))))
     
-    const mySchedule: LocalNotificationSchedule = {
-      repeats: true,
-      
-      every:'week',
-        on: {day :day,
-          hour:parseInt(starttime.slice(0,2)),
-          minute:parseInt(starttime.slice(3,5))},
-          at:new Date(time1)
-        
-      
-    };
-const notifs = LocalNotifications.schedule({
-  notifications: [
-    {
-      title: eventName,
-      body: "Body",
-      id: 1,
-      schedule: mySchedule,
-      sound: null,
-      attachments: null,
-      actionTypeId: "",
-      extra: null
+    
+    async function setNotifications() {
+      const notifs = await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: eventName,
+            body: 'u have one reminder',
+            id: new Date().getTime(),
+            schedule: {repeats:true,every:'week',at:present},
+            sound: null,
+            attachments: null,
+            actionTypeId: "",
+            extra: null
+          }
+        ]
+      });
+      console.log('scheduled notifications', notifs);
     }
-  ]
-});
-console.log('scheduled notifications', notifs);
-// this.localNotifications.schedule({
-//   id: 1,
-//   text: "Notifica 15 ",
-//   title: 'Hello!!! ', 
-//   trigger: { 
-//     every: {
-//       day: day,
-//       hour:parseInt(starttime.slice(0,2)),
-//           minute:parseInt(starttime.slice(3,5))
-//     } 
-//   } 
-// });
+    setNotifications();
+    
     
 }
   getEvent(day:number){
     return this.events.asObservable().pipe(map(events => events.filter(p => p.day===day)))
   }
+  
  
 }

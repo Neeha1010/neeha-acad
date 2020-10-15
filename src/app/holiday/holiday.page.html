@@ -19,7 +19,14 @@
     <ion-card *ngFor="let event of Events" class="ion-padding ion-margin">
       <div *ngIf="event.startDate<event.endDate">
         <ion-card-title>{{event.eventName}}</ion-card-title>
-      <ion-card-subtitle>{{event.startDate}} to {{event.endDate}}</ion-card-subtitle>
+        <ion-chip outline="true">
+          <ion-label color="primary">
+            {{event.startDate}} to {{event.endDate}}
+          </ion-label>
+        </ion-chip>
+      <ion-chip outline="true">
+        <ion-label color="primary">{{event.reason}}</ion-label>
+      </ion-chip>
       </div>
       
     </ion-card>

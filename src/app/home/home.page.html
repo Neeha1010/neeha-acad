@@ -33,6 +33,11 @@
         Add
       </ion-button>
     </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/','holiday']">
+        go to 
+      </ion-button>
+    </ion-buttons>
     
   </ion-toolbar>
 
@@ -42,8 +47,13 @@
     <div *ngIf="dayEvents.length>0">
       <ion-card  *ngFor="let event of dayEvents" class="ion-padding ion-margin">
         <ion-card-title> {{event.eventName}}</ion-card-title>
-        <ion-card-subtitle > {{event.starttime}}-{{event.endtime}} </ion-card-subtitle>
+        <ion-chip outline="true">
+          <ion-label color="primary">
+            {{event.starttime}} to {{event.endtime}}
+          </ion-label>
+          </ion-chip>
     </ion-card>
   
     </div> 
+    
 </ion-content>
